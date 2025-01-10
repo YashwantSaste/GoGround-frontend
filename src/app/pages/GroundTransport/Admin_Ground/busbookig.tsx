@@ -46,7 +46,6 @@ export const BusBookingPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(5);
   const [search, setSearch] = useState("");
-  const [showAddBookingModal, setShowAddBookingModal] = useState(false);
 
   const filteredBookings = bookings.filter((booking) =>
     booking.vehicleName?.toLowerCase().includes(search.toLowerCase())
@@ -90,14 +89,7 @@ export const BusBookingPage: React.FC = () => {
             value={search}
             onChange={handleSearchChange}
           />
-          <button
-            type="button"
-            className="btn btn-light-primary border-0 rounded mx-2"
-            onClick={() => setShowAddBookingModal(true)}
-          >
-            <i className="fs-2 bi bi-plus" />
-            Add New Booking
-          </button>
+          
         </div>
       </div>
 
