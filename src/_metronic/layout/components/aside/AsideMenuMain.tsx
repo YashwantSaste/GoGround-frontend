@@ -16,7 +16,7 @@ export function AsideMenuMainUpdated() {
           {/* <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Jobs and Applicants</span> */}
         </div>
       </div>
-      <AsideMenuItem to="/Ground/Bus" icon="element-11" title="Ships" />
+      <AsideMenuItem to="/Ground/Bus" icon="element-11" title="Vehicles" />
       <AsideMenuItem to="/Ground/bususer" icon="element-11" title="Users" />
       <AsideMenuItem to="/Ground/routes" icon="element-11" title="Routes" />    
       <div className="menu-item">
@@ -27,11 +27,11 @@ export function AsideMenuMainUpdated() {
       <AsideMenuItem
         to="/Ground/BusEmployee"
         icon="element-11"
-        title="Employees"
+        title="Drivers"
       />
       <AsideMenuItem to="/Ground/BusRevenue" icon="element-11" title="Revenue" />
       {/* <AsideMenuItem to="Water/FAQ" icon="element-11" title="FAQ & Queries" /> */}
-      <AsideMenuItem to="/Ground/busbooking" icon="element-11" title="FAQ & Queries" />
+      <AsideMenuItem to="/Ground/busbooking" icon="element-11" title="Booking_Report" />
     </>
   );
 }

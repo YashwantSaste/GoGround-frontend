@@ -173,7 +173,7 @@ export const BusEmployeePage: React.FC = () => {
             onClick={() => setShowAddEmployeeModal(true)}
           >
             <i className="fs-2 bi bi-plus" />
-            Add New Employee
+            Add Driver
           </button>
         </div>
       </div>

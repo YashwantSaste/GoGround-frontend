@@ -44,6 +44,7 @@ import SummaryAir from "../pages/AirTransport/UserUI_A/SummaryAir";
 import BusDetails from "../pages/GroundTransport/UserUI_G/BusDetails";
 import SummaryGround from "../pages/GroundTransport/UserUI_G/SummaryGround";
 import { RouteDetail } from "../pages/GroundTransport/Admin_Ground/RouteDetail";
+import { Logout } from "../modules/auth/Logout";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -139,6 +140,7 @@ const PrivateRoutes = () => {
         <Route path="/Ground/Search" element={<BusSearch />} />
         <Route path="/BusDetails" element={<BusDetails />} />
         <Route path="/SummaryGround" element={<SummaryGround />} />
+        <Route path="/logout" element={<Logout />} />
 
         {/* <Route path=" Air/Booking" element={<AirBookingPage/>}></Route> */}
 
