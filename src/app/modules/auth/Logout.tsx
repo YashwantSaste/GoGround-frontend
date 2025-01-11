@@ -27,16 +27,10 @@ export function Logout() {
 
   useEffect(() => {
     const handleLogout = async () => {
-      try {
-        await fetch("http://localhost:8080/logout", {
-          method: "POST",
-          credentials: "include",
-        });
+      
         logout();
         navigate("/auth/login");
-      } catch (error) {
-        console.error("Error during logout:", error);
-      }
+      
     };
     handleLogout();
   }, [logout, navigate]);
