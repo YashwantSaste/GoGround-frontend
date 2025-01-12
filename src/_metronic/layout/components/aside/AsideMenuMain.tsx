@@ -152,6 +152,7 @@ export function AsideMenuMainUpdated() {
       },
     };
 
+    // @ts-ignore
     return menus[type]?.[role] ?? (
       <div>
         <h5 className="text-muted">Invalid Type or Role</h5>
