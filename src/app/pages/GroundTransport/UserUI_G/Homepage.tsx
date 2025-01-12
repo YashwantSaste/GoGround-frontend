@@ -12,6 +12,7 @@ const BusBooking = () => {
     <div className="container mt-4">
       <div className="card">
         <div className="card-header">
+          <h1> This is Ground User Homepage</h1>
           <h3 className="card-title">Bus Booking Form</h3>
         </div>
         <div className="card-body">
