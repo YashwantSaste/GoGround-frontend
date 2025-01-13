@@ -3,7 +3,6 @@ import axios from "axios";
 import EditCredentials from "./EditCredentials";
 
 interface User {
-  id: number;
   username: string;
   email: string;
 }
@@ -12,31 +11,37 @@ export const EditCredentialsPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
 
+  // Fetch user details
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get<User>("http://localhost:8080/user/get_user", {
+        withCredentials: true,
+      });
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      setUser(null); // Graceful error handling
+    }
+  };
+
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get<User>("http://localhost:8080/user/get_user", {
-          withCredentials: true,
-        });
-        // Assume password is not fetched from the backend
-
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-        setUser(null); // Handle error gracefully
-      }
-    };
-
     fetchUserDetails();
   }, []);
 
-  const handleEditClick = () => {
-    setShowEditModal(true);
-  };
+  // Handle credential update
+  const handleUpdate = async (username: string, password?: string) => {
+    try {
+      await axios.put(
+        "http://localhost:8080/user/update",
+        { username, password },
+        { withCredentials: true }
+      );
 
-  const handleUpdate = (username: string, password: string) => {
-    setUser((prevUser) =>
-      prevUser ? { ...prevUser, username, password } : null
-    );
+      // Update local state to reflect the changes
+      setUser((prevUser) => (prevUser ? { ...prevUser, username } : null));
+    } catch (error) {
+      console.error("Error updating credentials:", error);
+    }
   };
 
   return (
@@ -56,7 +61,7 @@ export const EditCredentialsPage: React.FC = () => {
             <p><strong>Email:</strong> {user.email}</p>
             <button
               className="btn btn-light-primary btn-sm"
-              onClick={handleEditClick}
+              onClick={() => setShowEditModal(true)}
             >
               Edit Credentials
             </button>

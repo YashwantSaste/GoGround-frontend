@@ -50,6 +50,7 @@ import PassengerDetails from "../pages/GroundTransport/Admin_Ground/PassengerDet
 import EditCredentials from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
 import Profile from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
 import EditCredentialsPage from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
+import {UserHistory} from "../pages/GroundTransport/UserUI_G/UserHistory.tsx";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -147,6 +148,7 @@ const PrivateRoutes = () => {
         <Route path="/SummaryGround" element={<SummaryGround />} />
         <Route path="/UserDashBoardGround" element={<UserDashboard />} />
         <Route path="/Profile" element={<EditCredentialsPage />} />
+        <Route path="/BookingHistory" element={<UserHistory />} />
 
         {/* Ground User Passenger Booking */}
         <Route path="/passenger-details/:routeId" element={<PassengerDetails/>}/>
