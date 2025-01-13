@@ -6,8 +6,6 @@ interface PassengerDetailsFormData {
   name: string;
   age: number;
   gender: string;
-  email?: string;
-  mobile?: string;
 }
 
 interface LocationState {
@@ -26,6 +24,8 @@ const PassengerDetails: React.FC = () => {
 
   // Retrieve routeId and formData (source, destination, etc.) passed through the navigate state
   const { routeId, formData } = location.state as LocationState;
+  console.log("Route ID:", routeId);
+  console.log("Form Data:", formData);
 
   // State to hold multiple passengers
   const [passengers, setPassengers] = useState<PassengerDetailsFormData[]>([]);
@@ -39,6 +39,7 @@ const PassengerDetails: React.FC = () => {
     index: number
   ) => {
     const { name, value } = e.target;
+    console.log(`Updating passenger ${index}, field ${name} to value ${value}`);
     const updatedPassengers = [...passengers];
     updatedPassengers[index] = {
       ...updatedPassengers[index],
@@ -49,14 +50,16 @@ const PassengerDetails: React.FC = () => {
 
   // Add new passenger form
   const addPassenger = () => {
+    console.log("Adding new passenger");
     setPassengers([
       ...passengers,
-      { name: "", age: 0, gender: "", email: "", mobile: "" },
+      { name: "", age: 0, gender: "" },
     ]);
   };
 
   // Remove a passenger form
   const removePassenger = (index: number) => {
+    console.log(`Removing passenger at index ${index}`);
     const updatedPassengers = passengers.filter((_, i) => i !== index);
     setPassengers(updatedPassengers);
   };
@@ -64,6 +67,7 @@ const PassengerDetails: React.FC = () => {
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting form with passengers:", passengers);
     if (passengers.length === 0 || passengers.some(p => !p.name || !p.age || !p.gender)) {
       alert("Please fill in all passenger details.");
       return;
@@ -148,35 +152,6 @@ const PassengerDetails: React.FC = () => {
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
-                </div>
-
-                {/* Optional email and mobile */}
-                <div className="mb-3">
-                  <label htmlFor={`email-${index}`} className="form-label">
-                    Email (Optional)
-                  </label>
-                  <input
-                    type="email"
-                    id={`email-${index}`}
-                    className="form-control"
-                    name="email"
-                    value={passenger.email || ""}
-                    onChange={(e) => handleInputChange(e, index)}
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor={`mobile-${index}`} className="form-label">
-                    Mobile Number (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    id={`mobile-${index}`}
-                    className="form-control"
-                    name="mobile"
-                    value={passenger.mobile || ""}
-                    onChange={(e) => handleInputChange(e, index)}
-                  />
                 </div>
 
                 {/* Remove button for each passenger form */}

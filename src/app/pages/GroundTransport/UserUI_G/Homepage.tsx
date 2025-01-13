@@ -30,6 +30,7 @@ const BusBooking: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSearch = async () => {
+    console.log("handleSearch called with: ", { source, destination, vehicleType, date });
     setLoading(true);
     try {
       const response = await axios.post(
@@ -43,28 +44,32 @@ const BusBooking: React.FC = () => {
         }
       );
 
-      console.log(response.data); // Debug API response
+      console.log("API response: ", response.data); // Debug API response
 
       // Ensure the data is an array before setting it to state
       if (Array.isArray(response.data)) {
         setAvailableRoutes(response.data);
+        console.log("Available routes set: ", response.data);
       } else {
         setAvailableRoutes([]); // Fallback if response data isn't an array
+        console.log("Response data is not an array. Available routes cleared.");
       }
     } catch (error) {
-      console.error("Error fetching routes:", error);
+      console.error("Error fetching routes: ", error);
       alert("Failed to fetch available routes. Please try again.");
     } finally {
       setLoading(false);
+      console.log("Loading state set to false.");
     }
   };
 
   const handleBook = (routeId: number) => {
+    console.log("handleBook called with routeId: ", routeId);
     const formData: BusBookingFormData = { source, destination, vehicleType, date };
+    console.log("FormData for booking: ", formData);
     // Pass both the routeId and formData via state
     navigate(`/passenger-details/${routeId}`, { state: { routeId, formData } });
   };
-  
 
   return (
     <div className="container mt-4">
@@ -84,7 +89,10 @@ const BusBooking: React.FC = () => {
                 className="form-control"
                 placeholder="Enter Source"
                 value={source}
-                onChange={(e) => setSource(e.target.value)}
+                onChange={(e) => {
+                  console.log("Source updated: ", e.target.value);
+                  setSource(e.target.value);
+                }}
               />
             </div>
 
@@ -98,7 +106,10 @@ const BusBooking: React.FC = () => {
                 className="form-control"
                 placeholder="Enter Destination"
                 value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                onChange={(e) => {
+                  console.log("Destination updated: ", e.target.value);
+                  setDestination(e.target.value);
+                }}
               />
             </div>
 
@@ -110,7 +121,10 @@ const BusBooking: React.FC = () => {
                 id="vehicleType"
                 className="form-select"
                 value={vehicleType}
-                onChange={(e) => setVehicleType(e.target.value)}
+                onChange={(e) => {
+                  console.log("Vehicle Type updated: ", e.target.value);
+                  setVehicleType(e.target.value);
+                }}
               >
                 <option value="">Select</option>
                 <option value="bus">Bus</option>
@@ -127,7 +141,10 @@ const BusBooking: React.FC = () => {
                 id="date"
                 className="form-control"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => {
+                  console.log("Date updated: ", e.target.value);
+                  setDate(e.target.value);
+                }}
               />
             </div>
           </div>
@@ -176,9 +193,8 @@ const BusBooking: React.FC = () => {
                     <td>
                       <button
                         onClick={() => {
-                          console.log("clicking the button");
-                          handleBook(route.id)
-                          console.log(route.id)
+                          console.log("Book button clicked for route: ", route);
+                          handleBook(route.id);
                         }}
                         className="btn btn-success btn-sm"
                       >

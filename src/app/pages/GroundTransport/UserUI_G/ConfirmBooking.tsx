@@ -34,10 +34,10 @@ const ConfirmBooking: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    // You can add more logic here for any data validation or pre-checks
+    // Redirect to home if booking details are missing
     if (!bookingDetails) {
       alert("Booking details are missing. Please try again.");
-      navigate("/");
+      navigate("/Ground/homepage");
     }
   }, [bookingDetails, navigate]);
 
@@ -62,11 +62,16 @@ const ConfirmBooking: React.FC = () => {
       // Make the POST request to confirm the booking
       const response = await axios.post("http://localhost:8080/booking/add", bookingData);
 
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.bookingId) {
+        const bookingId = response.data.bookingId; // Extract bookingId from the response
         alert("Booking confirmed successfully!");
+
+        // Navigate to payment page and pass booking details along with bookingId
         navigate("/payment-details", {
-          state: { bookingDetails }, // Pass booking details to the payment page
+          state: { bookingDetails, bookingId },
         });
+      } else {
+        alert("Booking confirmed but booking ID is missing in the response.");
       }
     } catch (error) {
       alert("Booking failed. Please try again.");
@@ -103,9 +108,8 @@ const ConfirmBooking: React.FC = () => {
                   <p>
                     <strong>Passenger {index + 1}:</strong> {passenger.name}, Age: {passenger.age}, Gender: {passenger.gender}
                     <br />
-                    {passenger.email && <strong>Email:</strong>} {passenger.email}
-                    <br />
-                    {passenger.mobile && <strong>Mobile:</strong>} {passenger.mobile}
+                    {passenger.email && <><strong>Email:</strong> {passenger.email}<br /></>}
+                    {passenger.mobile && <><strong>Mobile:</strong> {passenger.mobile}<br /></>}
                   </p>
                 </div>
               ))}
