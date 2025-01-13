@@ -24,10 +24,15 @@ const BusBooking = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
+      // @ts-ignore
       const response = await axios.post(
         "http://localhost:8080/user/search_routes",
-        { source, destination, vehicleType, date },
-        { withCredentials: true }
+          { source, destination, vehicleType, date },
+          { withCredentials: true ,
+            headers: {
+    'X-Requested-With': 'XMLHttpRequest'
+          }},
+
       );
 
       console.log(response.data); // Debug API response
