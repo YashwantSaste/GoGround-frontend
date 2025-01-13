@@ -1,10 +1,10 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 // Step 1: Define the Route interface
 interface Route {
-  routeId: number;
+  id: number;
   source: string;
   destination: string;
   distance: number;
@@ -12,7 +12,15 @@ interface Route {
   vehicleType: string;
 }
 
-const BusBooking = () => {
+// Form data for submitting initial stage details
+interface BusBookingFormData {
+  source: string;
+  destination: string;
+  vehicleType: string;
+  date: string;
+}
+
+const BusBooking: React.FC = () => {
   const [source, setSource] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [vehicleType, setVehicleType] = useState<string>("");
@@ -22,69 +30,46 @@ const BusBooking = () => {
   const navigate = useNavigate();
 
   const handleSearch = async () => {
+    console.log("handleSearch called with: ", { source, destination, vehicleType, date });
     setLoading(true);
     try {
-      // @ts-ignore
       const response = await axios.post(
         "http://localhost:8080/user/search_routes",
-          { source, destination },
-          { withCredentials: true ,
-           }
-
+        { source, destination, vehicleType, date },
+        {
+          withCredentials: true,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        }
       );
 
-      console.log(response.data); // Debug API response
+      console.log("API response: ", response.data); // Debug API response
 
       // Ensure the data is an array before setting it to state
       if (Array.isArray(response.data)) {
         setAvailableRoutes(response.data);
+        console.log("Available routes set: ", response.data);
       } else {
         setAvailableRoutes([]); // Fallback if response data isn't an array
+        console.log("Response data is not an array. Available routes cleared.");
       }
     } catch (error) {
-      console.error("Error fetching routes:", error);
+      console.error("Error fetching routes: ", error);
       alert("Failed to fetch available routes. Please try again.");
     } finally {
       setLoading(false);
+      console.log("Loading state set to false.");
     }
   };
 
   const handleBook = (routeId: number) => {
-    navigate(`/passenger-details/${routeId}`);
+    console.log("handleBook called with routeId: ", routeId);
+    const formData: BusBookingFormData = { source, destination, vehicleType, date };
+    console.log("FormData for booking: ", formData);
+    // Pass both the routeId and formData via state
+    navigate(`/passenger-details/${routeId}`, { state: { routeId, formData } });
   };
-
-  useEffect(() => {
-    // Dummy data for testing purposes
-    const dummyRoutes: Route[] = [
-      {
-        routeId: 1,
-        source: "New York",
-        destination: "Boston",
-        distance: 300,
-        date: "2025-01-15",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 2,
-        source: "Los Angeles",
-        destination: "San Francisco",
-        distance: 380,
-        date: "2025-01-16",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 3,
-        source: "Chicago",
-        destination: "Detroit",
-        distance: 450,
-        date: "2025-01-18",
-        vehicleType: "cab",
-      },
-    ];
-
-    setAvailableRoutes(dummyRoutes);
-  }, []);
-
 
   return (
     <div className="container mt-4">
@@ -104,7 +89,10 @@ const BusBooking = () => {
                 className="form-control"
                 placeholder="Enter Source"
                 value={source}
-                onChange={(e) => setSource(e.target.value)}
+                onChange={(e) => {
+                  console.log("Source updated: ", e.target.value);
+                  setSource(e.target.value);
+                }}
               />
             </div>
 
@@ -118,7 +106,10 @@ const BusBooking = () => {
                 className="form-control"
                 placeholder="Enter Destination"
                 value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                onChange={(e) => {
+                  console.log("Destination updated: ", e.target.value);
+                  setDestination(e.target.value);
+                }}
               />
             </div>
 
@@ -130,7 +121,10 @@ const BusBooking = () => {
                 id="vehicleType"
                 className="form-select"
                 value={vehicleType}
-                onChange={(e) => setVehicleType(e.target.value)}
+                onChange={(e) => {
+                  console.log("Vehicle Type updated: ", e.target.value);
+                  setVehicleType(e.target.value);
+                }}
               >
                 <option value="">Select</option>
                 <option value="bus">Bus</option>
@@ -147,7 +141,10 @@ const BusBooking = () => {
                 id="date"
                 className="form-control"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => {
+                  console.log("Date updated: ", e.target.value);
+                  setDate(e.target.value);
+                }}
               />
             </div>
           </div>
@@ -165,51 +162,54 @@ const BusBooking = () => {
       </div>
 
       <div className="card mt-4">
-      <div className="card-body">
-        <h2>Available Routes</h2>
-        {loading && <p>Loading routes...</p>}
-        {availableRoutes.length === 0 && !loading && (
-          <p>No routes available.</p>
-        )}
-      {availableRoutes.length > 0 && (
-      <table className="table table-striped table-bordered">
-        <thead className="table-dark">
-          <tr>
-            <th>Source</th>
-            <th>Destination</th>
-            <th>Date</th>
-            <th>Vehicle Type</th>
-            <th>Distance (km)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {availableRoutes.map((route) => (
-            <tr key={route.routeId}>
-              <td>{route.source}</td>
-              <td>{route.destination}</td>
-              <td>{route.date}</td>
-              <td>{route.vehicleType}</td>
-              <td>{route.distance}</td>
-              <td>
-                <button
-                  onClick={() => handleBook(route.routeId)}
-                  className="btn btn-success btn-sm"
-                >
-                  Book
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )}
-  </div>
+        <div className="card-body">
+          <h2>Available Routes</h2>
+          {loading && <p>Loading routes...</p>}
+          {availableRoutes.length === 0 && !loading && (
+            <p>No routes available.</p>
+          )}
+          {availableRoutes.length > 0 && (
+            <table className="table table-striped table-bordered">
+              <thead className="table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Source</th>
+                  <th>Destination</th>
+                  <th>Date</th>
+                  <th>Vehicle Type</th>
+                  <th>Distance (km)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {availableRoutes.map((route) => (
+                  <tr key={route.id}>
+                    <td>{route?.id}</td>
+                    <td>{route.source}</td>
+                    <td>{route.destination}</td>
+                    <td>{route.date}</td>
+                    <td>{route.vehicleType}</td>
+                    <td>{route.distance}</td>
+                    <td>
+                      <button
+                        onClick={() => {
+                          console.log("Book button clicked for route: ", route);
+                          handleBook(route.id);
+                        }}
+                        className="btn btn-success btn-sm"
+                      >
+                        Book
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-
     </div>
   );
 };
 
 export default BusBooking;
-
