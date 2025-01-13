@@ -46,6 +46,7 @@ import SummaryGround from "../pages/GroundTransport/UserUI_G/SummaryGround";
 import { RouteDetail } from "../pages/GroundTransport/Admin_Ground/RouteDetail";
 import { Logout } from "../modules/auth/Logout";
 import UserDashboard from "../pages/GroundTransport/UserUI_G/SummaryGround";
+import PassengerDetails from "../pages/GroundTransport/Admin_Ground/PassengerDetails";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -142,6 +143,9 @@ const PrivateRoutes = () => {
         <Route path="/BusDetails" element={<BusDetails />} />
         <Route path="/SummaryGround" element={<SummaryGround />} />
         <Route path="/UserDashBoardGround" element={<UserDashboard />} />
+
+        {/* Ground User Passenger Booking */}
+        <Route path={"/passenger-details/:routeId"} element={<PassengerDetails/>}/>
 
         {/* <Route path=" Air/Booking" element={<AirBookingPage/>}></Route> */}
 
