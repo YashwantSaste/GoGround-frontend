@@ -27,11 +27,9 @@ const BusBooking = () => {
       // @ts-ignore
       const response = await axios.post(
         "http://localhost:8080/user/search_routes",
-          { source, destination, vehicleType, date },
+          { source, destination },
           { withCredentials: true ,
-            headers: {
-    'X-Requested-With': 'XMLHttpRequest'
-          }},
+           }
 
       );
 
