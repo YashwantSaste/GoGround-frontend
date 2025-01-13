@@ -16,7 +16,8 @@ export function AsideMenuMainUpdatedGround() {
           {/* <span className='menu-section text-muted text-uppercase fs-8 ls-1'>Jobs and Applicants</span> */}
         </div>
       </div>
-      <AsideMenuItem to="Ground/Bus" icon="element-11" title="BUS" />
+      <AsideMenuItem to="Ground/Bus" icon="element-11" title="Vehicle" />
+        <AsideMenuItem to="Ground/Routes" icon="element-11" title="Routes" />
       <AsideMenuItem to="/Ground/bususer" icon="element-11" title="Users" />
       <div className="menu-item">
         {/* <div className='menu-content pt-8 pb-2'>
@@ -26,10 +27,10 @@ export function AsideMenuMainUpdatedGround() {
       <AsideMenuItem
         to="/Ground/BusEmployee"
         icon="element-11"
-        title="Employees"
+        title="Drivers "
       />
-      <AsideMenuItem to="Ground/BusRevenue" icon="element-11" title="Revenue" />
-      <AsideMenuItem to="Ground/FAQ" icon="element-11" title="FAQ & Queries" />
+      {/*<AsideMenuItem to="Ground/BusRevenue" icon="element-11" title="Revenue" />*/}
+      <AsideMenuItem to="Ground/busbooking" icon="element-11" title="Booking History" />
     </>
   );
 }
