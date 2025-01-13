@@ -47,6 +47,8 @@ import { RouteDetail } from "../pages/GroundTransport/Admin_Ground/RouteDetail";
 import { Logout } from "../modules/auth/Logout";
 import UserDashboard from "../pages/GroundTransport/UserUI_G/SummaryGround";
 import PassengerDetails from "../pages/GroundTransport/Admin_Ground/PassengerDetails";
+import PaymentDetails from "../pages/GroundTransport/UserUI_G/PaymentDetails";
+import ConfirmBooking from "../pages/GroundTransport/UserUI_G/ConfirmBooking";
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -146,6 +148,10 @@ const PrivateRoutes = () => {
 
         {/* Ground User Passenger Booking */}
         <Route path={"/passenger-details/:routeId"} element={<PassengerDetails/>}/>
+        {/* COnfirm booking for ground user */}
+        <Route path="/confirm-booking" element={<ConfirmBooking/>}/>
+        {/* Payment details for ground user */}
+        <Route path="/payment-details" element={<PaymentDetails/>}/>
 
         {/* <Route path=" Air/Booking" element={<AirBookingPage/>}></Route> */}
 
