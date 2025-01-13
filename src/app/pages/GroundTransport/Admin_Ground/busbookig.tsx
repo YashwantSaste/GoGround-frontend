@@ -119,7 +119,7 @@ export const BusBookingPage: React.FC = () => {
                     <td>{booking.bookingId}</td>
                     <td>{booking.source}</td>
                     <td>{booking.destination}</td>
-                    <td>{booking.status}</td>
+                    <td>{booking.status} </td>
                     <td>{booking.date}</td>
                     <td>{booking.vehicleType}</td>
                     <td>{booking.vehicleName}</td>

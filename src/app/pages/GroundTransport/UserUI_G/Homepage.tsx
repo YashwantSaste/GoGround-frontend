@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // Step 1: Define the Route interface
 interface Route {
-  routeId: number;
+  id: number;
   source: string;
   destination: string;
   distance: number;
@@ -52,39 +52,24 @@ const BusBooking = () => {
   };
 
   const handleBook = (routeId: number) => {
-    navigate(`/passenger-details/${routeId}`);
+    const selectedRoute = availableRoutes.find(route => route.id === routeId);
+    if (selectedRoute) {
+      // Pass state containing route details to PassengerDetails
+      navigate(`/passenger-details/${routeId}`, {
+        state: {
+          source: selectedRoute.source,
+          destination: selectedRoute.destination,
+          date: date,
+          vehicleType: vehicleType,
+        },
+      });
+    }
   };
+  
 
   useEffect(() => {
     // Dummy data for testing purposes
-    const dummyRoutes: Route[] = [
-      {
-        routeId: 1,
-        source: "New York",
-        destination: "Boston",
-        distance: 300,
-        date: "2025-01-15",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 2,
-        source: "Los Angeles",
-        destination: "San Francisco",
-        distance: 380,
-        date: "2025-01-16",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 3,
-        source: "Chicago",
-        destination: "Detroit",
-        distance: 450,
-        date: "2025-01-18",
-        vehicleType: "cab",
-      },
-    ];
-
-    setAvailableRoutes(dummyRoutes);
+    
   }, []);
 
 
@@ -187,15 +172,15 @@ const BusBooking = () => {
         </thead>
         <tbody>
           {availableRoutes.map((route) => (
-            <tr key={route.routeId}>
+            <tr key={route.id}>
               <td>{route.source}</td>
               <td>{route.destination}</td>
-              <td>{route.date}</td>
-              <td>{route.vehicleType}</td>
+              <td>{date}</td>
+              <td>{vehicleType}</td>
               <td>{route.distance}</td>
               <td>
                 <button
-                  onClick={() => handleBook(route.routeId)}
+                  onClick={() => handleBook(route.id)}
                   className="btn btn-success btn-sm"
                 >
                   Book
