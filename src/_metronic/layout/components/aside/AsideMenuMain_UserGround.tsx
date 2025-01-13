@@ -17,6 +17,7 @@ export function AsideMenuMainUpdatedGroundUser() {
         </div>
       </div>
       <AsideMenuItem to="Ground/homepage" icon="element-11" title="Book Now" />
+       <AsideMenuItem to="/Profile" icon="element-11" title="User Profile" />
       {/* <AsideMenuItem to="/Ground/bususer" icon="element-11" title="Users" /> */}
       <div className="menu-item">
         {/* <div className='menu-content pt-8 pb-2'>
