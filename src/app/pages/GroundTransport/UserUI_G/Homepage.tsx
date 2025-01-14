@@ -187,8 +187,8 @@ const BusBooking: React.FC = () => {
                     <td>{route?.id}</td>
                     <td>{route.source}</td>
                     <td>{route.destination}</td>
-                    <td>{route.date}</td>
-                    <td>{route.vehicleType}</td>
+                    <td>{date}</td>
+                    <td>{vehicleType}</td>
                     <td>{route.distance}</td>
                     <td>
                       <button

@@ -1,24 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Pagination from "../../Pagination";
 // import AddBusUser from "./AddBusUser";
+import axios from "axios";
 
-// Example static data for bus users
-const mockBusUsers = [
-  { id: 1, name: "Alice Green", age: 32, role: "Passenger", active: true },
-  { id: 2, name: "Bob Brown", age: 45, role: "Passenger", active: false },
-  { id: 3, name: "Charlie Blue", age: 29, role: "Driver", active: true },
-];
-
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  active: boolean;
+}
 export const BusUserPage: React.FC = () => {
-  const [users, setUsers] = useState(mockBusUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(5);
   const [search, setSearch] = useState("");
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  // Fetch users from API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/admin/getAllUsers");
+
+        const mappedUsers = response.data.map((user: any) => ({
+          id: user.userId,
+          name: user.username || "Unknown", // Fallback for missing name
+          email: user.email || "No Email", // Fallback for missing email
+          role:  user.role.name || "Unknown", // Handle non-string roles
+          active: true, // Default active status
+        }));
+
+        setUsers(mappedUsers);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
 
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
+    user?.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const handlePageChange = (page: number) => setCurrentPage(page);
@@ -42,17 +70,21 @@ export const BusUserPage: React.FC = () => {
     );
   };
 
-  const handleAddUser = (newUser: { name: string; age: number; role: string; active: boolean }) => {
+  const handleAddUser = (newUser: User) => {
     const newUserWithId = { ...newUser, id: users.length + 1 };
     setUsers([...users, newUserWithId]);
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="card">
       {/* Header */}
       <div className="card-header border-0 pt-5">
         <h3 className="card-title align-items-start flex-column">
-          <span className="card-label fw-bold fs-3 mb-1">Bus Users</span>
+          <span className="card-label fw-bold fs-3 mb-1">Users</span>
           <span className="text-muted mt-1 fw-semibold fs-7">
             Total Users: {filteredUsers.length}
           </span>
@@ -62,38 +94,21 @@ export const BusUserPage: React.FC = () => {
             type="text"
             className="form-control border-1 border-primary border-opacity-25 mx-2 text-gray-800"
             style={{ width: "12rem" }}
-            placeholder="Search Bus Users"
+            placeholder="Search Users"
             value={search}
             onChange={handleSearchChange}
           />
 
-          <div className="d-flex align-items-center">
-            <span className="fs-7 fw-bolder text-gray-700 pe-4 text-nowrap d-none d-xxl-block">
-              Filter By Role:
-            </span>
-            <select
-              className="form-select form-select-sm form-select-solid w-100px w-xxl-125px"
-              data-control="select2"
-              data-placeholder="All"
-              data-hide-search="true"
-              defaultValue={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value=""></option>
-              <option value="1">All</option>
-              <option value="2">Passenger</option>
-              <option value="3">Driver</option>
-            </select>
-          </div>
 
-          <button
+
+          {/* <button
             type="button"
             className="btn btn-light-primary border-0 rounded mx-2"
             onClick={() => setShowAddUserModal(true)}
           >
             <i className="fs-2 bi bi-plus" />
             Add New User
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -104,9 +119,9 @@ export const BusUserPage: React.FC = () => {
             <thead>
               <tr className="fw-bold fs-6 text-gray-800 border-bottom border-gray-200">
                 <th>Name</th>
-                <th>Age</th>
+                <th>Email</th>
                 <th>Role</th>
-                <th>Actions</th>
+                {/* <th>Actions</th> */}
               </tr>
             </thead>
             <tbody>
@@ -115,10 +130,10 @@ export const BusUserPage: React.FC = () => {
                 .map((user) => (
                   <tr key={user.id}>
                     <td>{user.name}</td>
-                    <td>{user.age}</td>
+                    <td>{user.email}</td>
                     <td>{user.role}</td>
                     <td className="text-center">
-                      <div className="d-flex flex-row align-items-center">
+                      {/* <div className="d-flex flex-row align-items-center">
                         <button
                           className="btn btn-icon btn-bg-light btn-sm me-1"
                           // View button functionality
@@ -154,7 +169,7 @@ export const BusUserPage: React.FC = () => {
                             <span className="path5"></span>
                           </i>
                         </button>
-                      </div>
+                      </div> */}
                     </td>
                   </tr>
                 ))}
@@ -162,7 +177,7 @@ export const BusUserPage: React.FC = () => {
           </table>
         </div>
       </div>
-
+                <p>This is user page</p>
       {/* Pagination */}
       <div className="card-footer">
         <Pagination
@@ -181,7 +196,6 @@ export const BusUserPage: React.FC = () => {
           onAdd={handleAddUser}
         />
       )} */}
-      <p>this is user</p>
     </div>
   );
 };
