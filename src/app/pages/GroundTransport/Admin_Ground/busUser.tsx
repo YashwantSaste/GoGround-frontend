@@ -186,7 +186,7 @@ export const BusUserPage: React.FC = () => {
           </table>
         </div>
       </div>
-                <p>This is user page</p>
+
       {/* Pagination */}
       <div className="card-footer">
         <Pagination

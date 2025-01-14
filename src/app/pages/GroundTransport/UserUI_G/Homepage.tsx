@@ -27,10 +27,11 @@ const BusBooking: React.FC = () => {
   const [date, setDate] = useState<string>("");
   const [availableRoutes, setAvailableRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [vehicleStatus, setVehicleStatus] = useState<string | null>(null);
+  const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const handleSearch = async () => {
-    console.log("handleSearch called with: ", { source, destination, vehicleType, date });
     setLoading(true);
     try {
       const response = await axios.post(
@@ -44,31 +45,50 @@ const BusBooking: React.FC = () => {
         }
       );
 
-      console.log("API response: ", response.data); // Debug API response
-
-      // Ensure the data is an array before setting it to state
       if (Array.isArray(response.data)) {
         setAvailableRoutes(response.data);
-        console.log("Available routes set: ", response.data);
       } else {
-        setAvailableRoutes([]); // Fallback if response data isn't an array
-        console.log("Response data is not an array. Available routes cleared.");
+        setAvailableRoutes([]);
       }
     } catch (error) {
-      console.error("Error fetching routes: ", error);
       alert("Failed to fetch available routes. Please try again.");
     } finally {
       setLoading(false);
-      console.log("Loading state set to false.");
     }
   };
 
-  const handleBook = (routeId: number) => {
-    console.log("handleBook called with routeId: ", routeId);
+  const checkVehicleAvailability = async (routeId: number) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/vehicle/searchVehicle?type=${vehicleType}&routeId=${routeId}`
+      );
+
+      if (response.status === 200 && response.data === "Vehicle is valid and available") {
+        setVehicleStatus("available");
+      } else {
+        setVehicleStatus("unavailable");
+      }
+    } catch (error: any) {
+      setVehicleStatus("unavailable");
+    }
+  };
+
+  const handleBook = async (routeId: number) => {
+    setSelectedRouteId(routeId);
+    await checkVehicleAvailability(routeId);
+  };
+
+  const handleProceed = () => {
     const formData: BusBookingFormData = { source, destination, vehicleType, date };
-    console.log("FormData for booking: ", formData);
-    // Pass both the routeId and formData via state
-    navigate(`/passenger-details/${routeId}`, { state: { routeId, formData } });
+    if (selectedRouteId) {
+      navigate(`/passenger-details/${selectedRouteId}`, { state: { routeId: selectedRouteId, formData } });
+    }
+    setVehicleStatus(null); // Close modal
+  };
+
+  const handleCloseModal = () => {
+    setVehicleStatus(null);
+    setSelectedRouteId(null);
   };
 
   return (
@@ -89,10 +109,7 @@ const BusBooking: React.FC = () => {
                 className="form-control"
                 placeholder="Enter Source"
                 value={source}
-                onChange={(e) => {
-                  console.log("Source updated: ", e.target.value);
-                  setSource(e.target.value);
-                }}
+                onChange={(e) => setSource(e.target.value)}
               />
             </div>
 
@@ -106,10 +123,7 @@ const BusBooking: React.FC = () => {
                 className="form-control"
                 placeholder="Enter Destination"
                 value={destination}
-                onChange={(e) => {
-                  console.log("Destination updated: ", e.target.value);
-                  setDestination(e.target.value);
-                }}
+                onChange={(e) => setDestination(e.target.value)}
               />
             </div>
 
@@ -121,10 +135,7 @@ const BusBooking: React.FC = () => {
                 id="vehicleType"
                 className="form-select"
                 value={vehicleType}
-                onChange={(e) => {
-                  console.log("Vehicle Type updated: ", e.target.value);
-                  setVehicleType(e.target.value);
-                }}
+                onChange={(e) => setVehicleType(e.target.value)}
               >
                 <option value="">Select</option>
                 <option value="bus">Bus</option>
@@ -141,10 +152,7 @@ const BusBooking: React.FC = () => {
                 id="date"
                 className="form-control"
                 value={date}
-                onChange={(e) => {
-                  console.log("Date updated: ", e.target.value);
-                  setDate(e.target.value);
-                }}
+                onChange={(e) => setDate(e.target.value)}
               />
             </div>
           </div>
@@ -165,9 +173,7 @@ const BusBooking: React.FC = () => {
         <div className="card-body">
           <h2>Available Routes</h2>
           {loading && <p>Loading routes...</p>}
-          {availableRoutes.length === 0 && !loading && (
-            <p>No routes available.</p>
-          )}
+          {availableRoutes.length === 0 && !loading && <p>No routes available.</p>}
           {availableRoutes.length > 0 && (
             <table className="table table-striped table-bordered">
               <thead className="table-dark">
@@ -184,7 +190,7 @@ const BusBooking: React.FC = () => {
               <tbody>
                 {availableRoutes.map((route) => (
                   <tr key={route.id}>
-                    <td>{route?.id}</td>
+                    <td>{route.id}</td>
                     <td>{route.source}</td>
                     <td>{route.destination}</td>
                     <td>{route.date}</td>
@@ -192,10 +198,7 @@ const BusBooking: React.FC = () => {
                     <td>{route.distance}</td>
                     <td>
                       <button
-                        onClick={() => {
-                          console.log("Book button clicked for route: ", route);
-                          handleBook(route.id);
-                        }}
+                        onClick={() => handleBook(route.id)}
                         className="btn btn-success btn-sm"
                       >
                         Book
@@ -208,6 +211,37 @@ const BusBooking: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Modal for vehicle availability */}
+      {vehicleStatus && (
+        <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Vehicle Availability</h5>
+                <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+              </div>
+              <div className="modal-body">
+                {vehicleStatus === "available" ? (
+                  <p>The vehicle is available. Do you want to proceed with booking?</p>
+                ) : (
+                  <p>Sorry, the vehicle is not available right now. Please try another route.</p>
+                )}
+              </div>
+              <div className="modal-footer">
+                {vehicleStatus === "available" && (
+                  <button className="btn btn-primary" onClick={handleProceed}>
+                    Proceed
+                  </button>
+                )}
+                <button className="btn btn-secondary" onClick={handleCloseModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
