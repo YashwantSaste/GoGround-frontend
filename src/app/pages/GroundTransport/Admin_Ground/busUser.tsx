@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Pagination from "../../Pagination";
 // import AddBusUser from "./AddBusUser";
 import axios from "axios";
+const API_URL = import.meta.env.VITE_APP_API_URL as string;
 
 interface User {
   id: number;
@@ -23,20 +24,21 @@ export const BusUserPage: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/admin/getAllUsers");
+        const response = await axios.get(`${API_URL}/admin/getAllUsers`);
+        console.log("API URL IS: ",API_URL)
         
         // Log the entire response for debugging
         console.log("API Response:", response.data);
   
         const mappedUsers = response.data.map((user: any) => {
-          // Debug each user object
+          // Log user object for debugging
           console.log("Processing user:", user);
   
           return {
             id: user.userId,
             name: user.username || "Unknown", // Fallback for missing name
             email: user.email || "No Email", // Fallback for missing email
-            role: user.role.name, // Default role to "user"
+            role: user?.role || "No Role", // Handle missing role
             active: true, // Default active status
           };
         });
@@ -51,6 +53,7 @@ export const BusUserPage: React.FC = () => {
   
     fetchUsers();
   }, []);
+  
   
   
 

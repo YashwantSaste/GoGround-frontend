@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+const API_URL = import.meta.env.VITE_APP_API_URL
 // Step 1: Define the Route interface
 interface Route {
   id: number;
@@ -35,7 +35,7 @@ const BusBooking: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8080/user/search_routes",
+        `${API_URL}/user/search_routes`,
         { source, destination, vehicleType, date },
         {
           withCredentials: true,
@@ -60,7 +60,7 @@ const BusBooking: React.FC = () => {
   const checkVehicleAvailability = async (routeId: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/vehicle/searchVehicle?type=${vehicleType}&routeId=${routeId}`
+        `${API_URL}/vehicle/searchVehicle?type=${vehicleType}&routeId=${routeId}`
       );
 
       if (response.status === 200 && response.data === "Vehicle is valid and available") {

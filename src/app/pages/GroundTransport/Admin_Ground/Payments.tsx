@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Pagination from "../../Pagination";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_APP_API_URL
 interface Payment {
   id: number;
   paymentMethod: string;
@@ -23,7 +23,7 @@ export const PaymentPage: React.FC = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/payment/all");
+        const response = await axios.get(`${API_URL}/payment/all`);
 
         // Log the entire response for debugging
         console.log("API Response:", response.data);

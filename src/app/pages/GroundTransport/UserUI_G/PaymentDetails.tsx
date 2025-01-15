@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+const API_URL = import.meta.env.VITE_APP_API_URL as string;
 
 interface PassengerDetailsFormData {
   name: string;
@@ -43,7 +44,7 @@ const PaymentDetails: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.post("http://localhost:8080/payment/getFare", {
+        const response = await axios.post(`${API_URL}/payment/getFare`, {
           source: formData.source,
           destination: formData.destination,
           vehicleType: formData.vehicleType,
@@ -79,7 +80,7 @@ const PaymentDetails: React.FC = () => {
         bookingId,
       });
 
-      const response = await axios.post("http://localhost:8080/payment/create", {
+      const response = await axios.post(`${API_URL}/payment/create`, {
         paymentMethod,
         amount: fare,
         bookingId, // Pass the bookingId received earlier
@@ -87,9 +88,20 @@ const PaymentDetails: React.FC = () => {
 
       console.log("Payment response:", response);
 
+      const paymentId = response.data.id;
+      console.log(paymentId);
+
+      try{
+        const confirmPaymentStatus = await axios.put(`${API_URL}/payment/update-status/${paymentId}?status=COMPLETED`);
+        console.log("Payment response after updating payment status",confirmPaymentStatus)
+      }catch(error){
+        alert("Transaction failed, please try again")
+        console.log("Error updating status of Payment");
+      }
+
       try {
         console.log("Sending booking confirmation mail for booking ID:", bookingId);
-        const sendMail = await axios.post(`http://localhost:8080/mail/${bookingId}`);
+        const sendMail = await axios.post(`${API_URL}/mail/${bookingId}`);
         console.log("Mail sent successfully:", sendMail);
       } catch (mailError) {
         console.error("Error sending mail:", mailError);

@@ -4,7 +4,7 @@ import axios from "axios";
 import AddRoute from "./AddRouteModal";
 import DeleteModal from "./DeleteModal";
 import ViewEditRouteModal from "./ViewEditRouteModal";
-import DriverDetailsModal from "./DriverDetailsModal";
+const API_URL = import.meta.env.VITE_APP_API_URL
 
 // Interface for Driver
 interface RouteInterface {
@@ -16,7 +16,7 @@ interface RouteInterface {
 
 const getAllRoutes = async (setEmployees: React.Dispatch<React.SetStateAction<RouteInterface[]>>) => {
   try {
-    const response = await axios.get<RouteInterface[]>("http://localhost:8080/admin/routes/get", {
+    const response = await axios.get<RouteInterface[]>(`${API_URL}/admin/routes/get`, {
       withCredentials: true,
     });
     setEmployees(response.data);
@@ -65,7 +65,7 @@ export const RouteDetail: React.FC = () => {
     try {
       await axios.post(
         
-        "http://localhost:8080/admin/routes/add",
+        `${API_URL}/admin/routes/add`,
         newRoute,
         {
           withCredentials: true,
@@ -87,7 +87,7 @@ export const RouteDetail: React.FC = () => {
     }
   
     try {
-      await axios.delete(`http://localhost:8080/admin/routes/delete/${selectedRouteId}`, {
+      await axios.delete(`${API_URL}/admin/routes/delete/${selectedRouteId}`, {
         withCredentials: true,
       });
       await getAllRoutes(setRoutes); // Refresh the route list after deletion
@@ -115,7 +115,7 @@ export const RouteDetail: React.FC = () => {
   const updateRoute = async (updatedRoute: RouteInterface) => {
     try {
       await axios.put(
-        `http://localhost:8080/admin/routes/update/${updatedRoute.routeId}`,
+        `${API_URL}/admin/routes/update/${updatedRoute.routeId}`,
         updatedRoute,
         { withCredentials: true }
       );
