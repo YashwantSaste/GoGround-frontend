@@ -109,7 +109,7 @@ const PaymentDetails: React.FC = () => {
 
       if (response.status === 200) {
         alert("Payment successful! Your booking is confirmed.");
-        navigate("/Ground/busbooking"); // Redirect to a success page
+        navigate("/BookingHistory"); // Redirect to a success page
       }
     } catch (error) {
       console.error("Error making payment:", error);
