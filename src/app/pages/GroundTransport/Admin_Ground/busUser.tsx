@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Pagination from "../../Pagination";
 // import AddBusUser from "./AddBusUser";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_APP_API_URL;
 interface User {
   id: number;
   name: string;
@@ -23,7 +23,7 @@ export const BusUserPage: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/admin/getAllUsers");
+        const response = await axios.get(`${API_URL}/admin/getAllUsers`);
 
         const mappedUsers = response.data.map((user: any) => ({
           id: user.userId,

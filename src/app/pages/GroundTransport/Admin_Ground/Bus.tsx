@@ -3,7 +3,7 @@ import Pagination from "../../Pagination";
 import AddBus from "../Admin_Ground/AddBus";
 import axios from "axios";
 import AddVehicle from "./AddVehicle.tsx";
-
+const API_URL = import.meta.env.VITE_APP_API_URL;
 // Interfaces for API response types
 interface Driver {
   id: number;
@@ -33,7 +33,7 @@ interface Vehicle {
 const fetchAllVehicles = async (): Promise<Vehicle[]> => {
   try {
     const response = await axios.get<Vehicle[]>(
-      "http://localhost:8080/admin/vehicle/all",
+      `${API_URL}/admin/vehicle/all`,
       {
         withCredentials: true,
       }

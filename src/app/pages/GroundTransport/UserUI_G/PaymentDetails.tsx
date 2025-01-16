@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_APP_API_URL;
 interface PassengerDetailsFormData {
   name: string;
   age: number;
@@ -43,7 +43,7 @@ const PaymentDetails: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.post("http://localhost:8080/payment/getFare", {
+        const response = await axios.post(`${API_URL}/payment/getFare`, {
           source: formData.source,
           destination: formData.destination,
           vehicleType: formData.vehicleType,
@@ -79,7 +79,7 @@ const PaymentDetails: React.FC = () => {
         bookingId,
       });
 
-      const response = await axios.post("http://localhost:8080/payment/create", {
+      const response = await axios.post(`${API_URL}/payment/create`, {
         paymentMethod,
         amount: fare,
         bookingId, // Pass the bookingId received earlier
@@ -89,7 +89,7 @@ const PaymentDetails: React.FC = () => {
 
       try {
         console.log("Sending booking confirmation mail for booking ID:", bookingId);
-        const sendMail = await axios.post(`http://localhost:8080/mail/${bookingId}`);
+        const sendMail = await axios.post(`${API_URL}/mail/${bookingId}`);
         console.log("Mail sent successfully:", sendMail);
       } catch (mailError) {
         console.error("Error sending mail:", mailError);

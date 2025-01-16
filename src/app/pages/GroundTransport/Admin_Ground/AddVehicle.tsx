@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_APP_API_URL;
 interface Route {
   id: number;
   source: string;
@@ -56,10 +56,10 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose, onAdd }) => {
     const fetchDriversAndRoutes = async () => {
       try {
         const [driversRes, routesRes] = await Promise.all([
-          axios.get<Driver[]>("http://localhost:8080/admin/driver/all", {
+          axios.get<Driver[]>(`${API_URL}/admin/driver/all`, {
             withCredentials: true,
           }),
-          axios.get<Route[]>("http://localhost:8080/admin/routes/get", {
+          axios.get<Route[]>(`${API_URL}/admin/routes/get`, {
             withCredentials: true,
           }),
         ]);
@@ -108,7 +108,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose, onAdd }) => {
 
 
         const driverRes = await axios.get(
-          `http://localhost:8080/admin/driver/get_id?name=${vehicle.driverId}`,
+          `${API_URL}/admin/driver/get_id?name=${vehicle.driverId}`,
           { withCredentials: true }
         );
         const driverId = driverRes.data;
@@ -123,7 +123,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose, onAdd }) => {
       }
 
       const routeRes = await axios.get(
-        `http://localhost:8080/admin/routes/get_id?source=${source}&destination=${destination}`,
+        `${API_URL}/admin/routes/get_id?source=${source}&destination=${destination}`,
         { withCredentials: true }
       );
       const routeId = routeRes.data;
@@ -131,12 +131,12 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose, onAdd }) => {
 
 
       const routeobj = await axios.get(
-        `http://localhost:8080/admin/routes/find/${routeId}`,
+        `${API_URL}/admin/routes/find/${routeId}`,
         { withCredentials: true }
       );
       console.log(routeobj.data);
       const driverobj = await axios.get(
-        `http://localhost:8080/admin/driver/get/${driverId}`,
+        `${API_URL}/admin/driver/get/${driverId}`,
         { withCredentials: true }
       );
       console.log(driverobj.data);
@@ -151,7 +151,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose, onAdd }) => {
       console.log(updatedVehicle);
       // Now fetch the vehicle ID from the backend after the vehicle is added
       const res = await axios.post(
-        "http://localhost:8080/admin/vehicle/add",
+        "${API_URL}/admin/vehicle/add",
         updatedVehicle,
         { withCredentials: true }
       );

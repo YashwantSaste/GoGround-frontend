@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+const API_URL = import.meta.env.VITE_APP_API_URL;
 interface Route {
   id: number;
   source: string;
@@ -31,7 +31,7 @@ const BusBooking: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8080/user/search_routes",
+        `${API_URL}/user/search_routes`,
         { source, destination, vehicleType, date },
         {
           withCredentials: true,
