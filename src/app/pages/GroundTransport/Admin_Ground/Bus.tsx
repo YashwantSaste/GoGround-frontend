@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../../Pagination";
 import AddBus from "../Admin_Ground/AddBus";
 import axios from "axios";
+import AddVehicle from "./AddVehicle.tsx";
 
 // Interfaces for API response types
 interface Driver {
@@ -37,6 +38,7 @@ const fetchAllVehicles = async (): Promise<Vehicle[]> => {
         withCredentials: true,
       }
     );
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching API:", error);
@@ -159,7 +161,7 @@ export const BusesPage: React.FC = () => {
 
       {/* Add Bus Modal */}
       {showAddBusModal && (
-        <AddBus
+        <AddVehicle
           onClose={() => setShowAddBusModal(false)}
           // Pass appropriate onAdd logic
           onAdd={(newBus) => console.log("Add new bus", newBus)}
