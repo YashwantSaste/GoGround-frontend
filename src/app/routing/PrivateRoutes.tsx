@@ -47,8 +47,8 @@ import { RouteDetail } from "../pages/GroundTransport/Admin_Ground/RouteDetail";
 import { Logout } from "../modules/auth/Logout";
 import UserDashboard from "../pages/GroundTransport/UserUI_G/SummaryGround";
 import PassengerDetails from "../pages/GroundTransport/Admin_Ground/PassengerDetails";
-import EditCredentials from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
-import Profile from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
+import PaymentDetails from "../pages/GroundTransport/UserUI_G/PaymentDetails";
+import ConfirmBooking from "../pages/GroundTransport/UserUI_G/ConfirmBooking";
 import EditCredentialsPage from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
 import {UserHistory} from "../pages/GroundTransport/UserUI_G/UserHistory.tsx";
 
@@ -147,11 +147,15 @@ const PrivateRoutes = () => {
         <Route path="/BusDetails" element={<BusDetails />} />
         <Route path="/SummaryGround" element={<SummaryGround />} />
         <Route path="/UserDashBoardGround" element={<UserDashboard />} />
-        <Route path="/Profile" element={<EditCredentialsPage />} />
-        <Route path="/BookingHistory" element={<UserHistory />} />
+        <Route path="/Profile" element={<EditCredentialsPage/>} />
+        <Route path="/BookingHistory" element={<UserHistory/>} />
 
         {/* Ground User Passenger Booking */}
-        <Route path="/passenger-details/:routeId" element={<PassengerDetails/>}/>
+        <Route path={"/passenger-details/:routeId"} element={<PassengerDetails/>}/>
+        {/* COnfirm booking for ground user */}
+        <Route path="/confirm-booking" element={<ConfirmBooking/>}/>
+        {/* Payment details for ground user */}
+        <Route path="/payment-details" element={<PaymentDetails/>}/>
 
         {/* <Route path=" Air/Booking" element={<AirBookingPage/>}></Route> */}
 

@@ -1,10 +1,9 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-// Step 1: Define the Route interface
+const API_URL = import.meta.env.VITE_APP_API_URL;
 interface Route {
-  routeId: number;
+  id: number;
   source: string;
   destination: string;
   distance: number;
@@ -12,7 +11,14 @@ interface Route {
   vehicleType: string;
 }
 
-const BusBooking = () => {
+interface BusBookingFormData {
+  source: string;
+  destination: string;
+  vehicleType: string;
+  date: string;
+}
+
+const BusBooking: React.FC = () => {
   const [source, setSource] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [vehicleType, setVehicleType] = useState<string>("");
@@ -24,25 +30,23 @@ const BusBooking = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      // @ts-ignore
       const response = await axios.post(
-        "http://localhost:8080/user/search_routes",
-          { source, destination },
-          { withCredentials: true ,
-           }
-
+        `${API_URL}/user/search_routes`,
+        { source, destination, vehicleType, date },
+        {
+          withCredentials: true,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        }
       );
 
-      console.log(response.data); // Debug API response
-
-      // Ensure the data is an array before setting it to state
       if (Array.isArray(response.data)) {
         setAvailableRoutes(response.data);
       } else {
-        setAvailableRoutes([]); // Fallback if response data isn't an array
+        setAvailableRoutes([]);
       }
     } catch (error) {
-      console.error("Error fetching routes:", error);
       alert("Failed to fetch available routes. Please try again.");
     } finally {
       setLoading(false);
@@ -50,166 +54,248 @@ const BusBooking = () => {
   };
 
   const handleBook = (routeId: number) => {
-    navigate(`/passenger-details/${routeId}`);
+    const formData: BusBookingFormData = { source, destination, vehicleType, date };
+    navigate(`/passenger-details/${routeId}`, { state: { routeId, formData } });
   };
 
-  useEffect(() => {
-    // Dummy data for testing purposes
-    const dummyRoutes: Route[] = [
-      {
-        routeId: 1,
-        source: "New York",
-        destination: "Boston",
-        distance: 300,
-        date: "2025-01-15",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 2,
-        source: "Los Angeles",
-        destination: "San Francisco",
-        distance: 380,
-        date: "2025-01-16",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 3,
-        source: "Chicago",
-        destination: "Detroit",
-        distance: 450,
-        date: "2025-01-18",
-        vehicleType: "cab",
-      },
-    ];
-
-    setAvailableRoutes(dummyRoutes);
-  }, []);
-
-
   return (
-    <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">Bus Booking Form</h3>
-        </div>
-        <div className="card-body">
-          <div className="row align-items-end">
-            <div className="col-md-3">
-              <label htmlFor="source" className="form-label">
-                Source
-              </label>
-              <input
-                type="text"
-                id="source"
-                className="form-control"
-                placeholder="Enter Source"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-              />
-            </div>
-
-            <div className="col-md-3">
-              <label htmlFor="destination" className="form-label">
-                Destination
-              </label>
-              <input
-                type="text"
-                id="destination"
-                className="form-control"
-                placeholder="Enter Destination"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-              />
-            </div>
-
-            <div className="col-md-3">
-              <label htmlFor="vehicleType" className="form-label">
-                Vehicle Type
-              </label>
-              <select
-                id="vehicleType"
-                className="form-select"
-                value={vehicleType}
-                onChange={(e) => setVehicleType(e.target.value)}
-              >
-                <option value="">Select</option>
-                <option value="bus">Bus</option>
-                <option value="cab">Cab</option>
-              </select>
-            </div>
-
-            <div className="col-md-3">
-              <label htmlFor="date" className="form-label">
-                Date
-              </label>
-              <input
-                type="date"
-                id="date"
-                className="form-control"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
+    <div>
+      <style>{`
+        .container {
+          margin: 30px auto;
+          max-width: 85%;
+          font-family: 'Arial', sans-serif;
+        }
+        .card {
+          border-radius: 12px;
+          box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+          margin-bottom: 20px;
+          transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .card-header {
+          background-color: #007bff;
+          color: white;
+          padding: 20px;
+          font-size: 1.6rem;
+          font-weight: bold;
+          border-radius: 12px 12px 0 0;
+        }
+        .card-body {
+          padding: 30px;
+          background-color: #f9f9f9;
+          border-radius: 0 0 12px 12px;
+        }
+        .form-label {
+          font-weight: bold;
+          color: #333;
+        }
+        .form-control,
+        .form-select {
+          border-radius: 8px;
+          border: 1px solid #ddd;
+          padding: 12px;
+          margin-top: 5px;
+          width: 100%;
+          transition: border 0.3s ease;
+        }
+        .form-control:focus,
+        .form-select:focus {
+          border-color: #4caf50;
+          box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
+        }
+        .input-group {
+          margin-bottom: 20px;
+        }
+        .input-group-text {
+          background-color: #f0f0f0;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 12px;
+        }
+        .btn {
+          border-radius: 8px;
+          padding: 12px 20px;
+          font-weight: bold;
+        }
+        .btn-primary {
+          background-color: #007bff;
+          border-color: #007bff;
+          transition: all 0.3s ease-in-out;
+        }
+        .btn-primary:hover {
+          background-color: #0056b3;
+          border-color: #0056b3;
+        }
+        .btn-success {
+          background-color: #28a745;
+          border-color: #28a745;
+        }
+        .btn-success:hover {
+          background-color: #218838;
+          border-color: #218838;
+        }
+        .btn:disabled {
+          opacity: 0.7;
+        }
+        .table {
+          margin-top: 20px;
+          width: 100%;
+          border-collapse: collapse;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 1px solid #ddd;
+        }
+        .table th,
+        .table td {
+          text-align: center;
+          padding: 18px;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+          background-color: #f9f9f9;
+        }
+        .table-bordered {
+          border: 1px solid #ddd;
+        }
+        .table-primary th {
+          background-color: #007bff;
+          color: white;
+        }
+        .table-striped th {
+          background-color: #007bff;
+          color: white;
+        }
+        .table-striped td {
+          background-color: #f9f9f9;
+        }
+        .table-striped td:hover {
+          background-color: #f0f0f0;
+        }
+        .table-bordered td,
+        .table-bordered th {
+          border: 1px solid #ddd;
+        }
+      `}</style>
+      <div className="container mt-4">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title" style={{ fontWeight: 'bold' }}>Booking Form</h3>
           </div>
-
-          <div className="mt-3 d-flex justify-content-end">
-            <button
-              className="btn btn-primary"
-              onClick={handleSearch}
-              disabled={loading}
-            >
-              {loading ? "Searching..." : "Search"}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="card mt-4">
-      <div className="card-body">
-        <h2>Available Routes</h2>
-        {loading && <p>Loading routes...</p>}
-        {availableRoutes.length === 0 && !loading && (
-          <p>No routes available.</p>
-        )}
-      {availableRoutes.length > 0 && (
-      <table className="table table-striped table-bordered">
-        <thead className="table-dark">
-          <tr>
-            <th>Source</th>
-            <th>Destination</th>
-            <th>Date</th>
-            <th>Vehicle Type</th>
-            <th>Distance (km)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {availableRoutes.map((route) => (
-            <tr key={route.routeId}>
-              <td>{route.source}</td>
-              <td>{route.destination}</td>
-              <td>{route.date}</td>
-              <td>{route.vehicleType}</td>
-              <td>{route.distance}</td>
-              <td>
-                <button
-                  onClick={() => handleBook(route.routeId)}
-                  className="btn btn-success btn-sm"
+          <div className="card-body">
+            <div className="row align-items-end">
+              <div className="col-md-3">
+                <label htmlFor="source" className="form-label">
+                  Source
+                </label>
+                <input
+                  type="text"
+                  id="source"
+                  className="form-control"
+                  placeholder="Enter Source"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                />
+              </div>
+              <div className="col-md-3">
+                <label htmlFor="destination" className="form-label">
+                  Destination
+                </label>
+                <input
+                  type="text"
+                  id="destination"
+                  className="form-control"
+                  placeholder="Enter Destination"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                />
+              </div>
+              <div className="col-md-3">
+                <label htmlFor="vehicleType" className="form-label">
+                  Vehicle Type
+                </label>
+                <select
+                  id="vehicleType"
+                  className="form-select"
+                  value={vehicleType}
+                  onChange={(e) => setVehicleType(e.target.value)}
                 >
-                  Book
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )}
-  </div>
+                  <option value="">Select</option>
+                  <option value="bus">Bus</option>
+                  <option value="cab">Cab</option>
+                </select>
+              </div>
+              <div className="col-md-3">
+                <label htmlFor="date" className="form-label">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  className="form-control"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="mt-3 d-flex justify-content-end">
+              <button
+                className="btn btn-primary"
+                onClick={handleSearch}
+                disabled={loading}
+              >
+                {loading ? "Searching..." : "Search"}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="card mt-4">
+          <div className="card-body">
+            <h2>Available Routes</h2>
+            {loading && <p>Loading routes...</p>}
+            {availableRoutes.length === 0 && !loading && <p>No routes available.</p>}
+            {availableRoutes.length > 0 && (
+              <table className="table table-striped table-bordered">
+                <thead className="table-primary">
+                  <tr>
+                    <th>ID</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                    <th>Vehicle Type</th>
+                    <th>Distance (km)</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {availableRoutes.map((route) => (
+                    <tr key={route.id}>
+                      <td>{route.id}</td>
+                      <td>{route.source}</td>
+                      <td>{route.destination}</td>
+                      <td>{date}</td>
+                      <td>{vehicleType}</td>
+                      <td>{route.distance}</td>
+                      <td>
+                        <button
+                          onClick={() => handleBook(route.id)}
+                          className="btn btn-success btn-sm"
+                        >
+                          Book
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
       </div>
-
     </div>
   );
 };
 
 export default BusBooking;
-
