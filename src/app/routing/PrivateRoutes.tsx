@@ -47,6 +47,16 @@ import { RouteDetail } from "../pages/GroundTransport/Admin_Ground/RouteDetail";
 import { Logout } from "../modules/auth/Logout";
 import UserDashboard from "../pages/GroundTransport/UserUI_G/SummaryGround";
 import PassengerDetails from "../pages/GroundTransport/Admin_Ground/PassengerDetails";
+<<<<<<< Updated upstream
+=======
+import PaymentDetails from "../pages/GroundTransport/UserUI_G/PaymentDetails";
+import ConfirmBooking from "../pages/GroundTransport/UserUI_G/ConfirmBooking";
+import EditCredentialsPage from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
+import {UserHistory} from "../pages/GroundTransport/UserUI_G/UserHistory.tsx";
+import { PaymentPage } from "../pages/GroundTransport/Admin_Ground/Payments";
+import Receipt from "../pages/GroundTransport/UserUI_G/Receipt.tsx";
+
+>>>>>>> Stashed changes
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -146,6 +156,15 @@ const PrivateRoutes = () => {
 
         {/* Ground User Passenger Booking */}
         <Route path={"/passenger-details/:routeId"} element={<PassengerDetails/>}/>
+<<<<<<< Updated upstream
+=======
+        {/* COnfirm booking for ground user */}
+        <Route path="/confirm-booking" element={<ConfirmBooking/>}/>
+        {/* Payment details for ground user */}
+        <Route path="/payment-details" element={<PaymentDetails/>}/>
+        {/* Receipt showcasing and downloading for ground user */}
+        <Route path="/receipt" element={<Receipt/>}/>
+>>>>>>> Stashed changes
 
         {/* <Route path=" Air/Booking" element={<AirBookingPage/>}></Route> */}
 

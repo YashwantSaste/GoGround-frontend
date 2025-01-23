@@ -35,7 +35,12 @@ Chart.register(...registerables)
 
 const queryClient = new QueryClient()
 const container = document.getElementById('root')
+<<<<<<< Updated upstream
 if (container) {
+=======
+const stripePromise = loadStripe("pk_test_51QjGwpR5yyRTV8YI5vwSX0VFI95wlj6BlaH3IdvTmfkQbFY9hg76KyvFZ7oGbF8SG6AK56IPjCkkcsBdHyoaktO800RlfSO2H4");
+if (container) {    
+>>>>>>> Stashed changes
   createRoot(container).render(
     <QueryClientProvider client={queryClient}>
       <MetronicI18nProvider>
