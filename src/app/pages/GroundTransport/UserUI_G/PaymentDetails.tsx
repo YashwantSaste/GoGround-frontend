@@ -74,55 +74,55 @@ const PaymentDetails: React.FC = () => {
       alert("Stripe has not loaded yet. Please try again.");
       return;
     }
-
+  
     if (!fare) {
       alert("Fare is not available.");
       return;
     }
-
-    const fareToBeCalculated = fare * 100;
-
+  
+    const fareToBeCalculated = fare * 100; // Convert fare to smallest currency unit (e.g., cents)
+  
     setLoading(true);
     try {
-      // Step 1: Create PaymentIntent
+      // Step 1: Create PaymentIntent with dynamic values
       const { data } = await axios.post(`${API_URL}/stripe/payment/create-intent`, {
-        "amount": 5000.0,
-        "currency": "usd",
-        "booking_id": 123456,
-        "payment_method": "card"
+        amount: fareToBeCalculated, // Dynamically calculated fare
+        currency: "usd", // Set to desired currency
+        booking_id: bookingId, // Dynamically passed booking ID
+        payment_method: "card", // Payment method (can be extended for other methods)
       });
-
+  
       const { clientSecret } = data;
-
+  
       // Step 2: Confirm the PaymentIntent with Stripe
       const cardElement = elements.getElement(CardElement);
       if (!cardElement) {
         alert("Card Element not found. Please try again.");
         return;
       }
-
+  
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
         },
       });
-
+  
       if (error) {
         setError(`Payment failed: ${error.message}`);
         alert("Payment failed. Please try again.");
       } else if (paymentIntent) {
         console.log("Payment successful:", paymentIntent);
-
+  
         // Step 3: Update payment status on the backend
         const paymentId = paymentIntent.id;
         const confirmPaymentStatus = await axios.put(
           `${API_URL}/stripe/payment/update-status/${paymentId}?status=COMPLETED`
         );
-
+  
         console.log("Payment status updated:", confirmPaymentStatus);
-        
-        localStorage.setItem("passengerDetails",JSON.stringify(passengers))
-        
+  
+        localStorage.setItem("passengerDetails", JSON.stringify(passengers));
+  
         // Step 4: Redirect to Receipt page instead of booking history
         navigate("/receipt", {
           state: {
@@ -130,7 +130,7 @@ const PaymentDetails: React.FC = () => {
             paymentId: confirmPaymentStatus.data.id,
             fare: fare,
             paymentMethod: "card",
-            passengers:passengers
+            passengers: passengers,
           },
         });
       }
@@ -141,6 +141,7 @@ const PaymentDetails: React.FC = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="container mt-4">

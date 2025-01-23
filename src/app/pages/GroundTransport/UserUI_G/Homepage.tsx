@@ -1,10 +1,11 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// Step 1: Define the Route interface
+const API_URL = import.meta.env.VITE_APP_API_URL;
+
 interface Route {
-  routeId: number;
+  id: number;
   source: string;
   destination: string;
   distance: number;
@@ -12,76 +13,83 @@ interface Route {
   vehicleType: string;
 }
 
-const BusBooking = () => {
+interface BusBookingFormData {
+  source: string;
+  destination: string;
+  vehicleType: string;
+  date: string;
+}
+
+const BusBooking: React.FC = () => {
   const [source, setSource] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [vehicleType, setVehicleType] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [availableRoutes, setAvailableRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [vehicleStatus, setVehicleStatus] = useState<string | null>(null);
+  const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const handleSearch = async () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8080/user/search_routes",
+        `${API_URL}/user/search_routes`,
         { source, destination, vehicleType, date },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        }
       );
 
-      console.log(response.data); // Debug API response
-
-      // Ensure the data is an array before setting it to state
       if (Array.isArray(response.data)) {
         setAvailableRoutes(response.data);
       } else {
-        setAvailableRoutes([]); // Fallback if response data isn't an array
+        setAvailableRoutes([]);
       }
     } catch (error) {
-      console.error("Error fetching routes:", error);
       alert("Failed to fetch available routes. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBook = (routeId: number) => {
-    navigate(`/passenger-details/${routeId}`);
+  const checkVehicleAvailability = async (routeId: number) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/vehicle/searchVehicle?type=${vehicleType}&routeId=${routeId}`
+      );
+
+      if (response.status === 200 && response.data === "Vehicle is valid and available") {
+        setVehicleStatus("available");
+      } else {
+        setVehicleStatus("unavailable");
+      }
+    } catch (error) {
+      setVehicleStatus("unavailable");
+    }
   };
 
-  useEffect(() => {
-    // Dummy data for testing purposes
-    const dummyRoutes: Route[] = [
-      {
-        routeId: 1,
-        source: "New York",
-        destination: "Boston",
-        distance: 300,
-        date: "2025-01-15",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 2,
-        source: "Los Angeles",
-        destination: "San Francisco",
-        distance: 380,
-        date: "2025-01-16",
-        vehicleType: "bus",
-      },
-      {
-        routeId: 3,
-        source: "Chicago",
-        destination: "Detroit",
-        distance: 450,
-        date: "2025-01-18",
-        vehicleType: "cab",
-      },
-    ];
+  const handleBook = async (routeId: number) => {
+    setSelectedRouteId(routeId);
+    await checkVehicleAvailability(routeId);
+  };
 
-    setAvailableRoutes(dummyRoutes);
-  }, []);
+  const handleProceed = () => {
+    const formData: BusBookingFormData = { source, destination, vehicleType, date };
+    if (selectedRouteId) {
+      navigate(`/passenger-details/${selectedRouteId}`, { state: { routeId: selectedRouteId, formData } });
+    }
+    setVehicleStatus(null); // Close modal
+  };
 
+  const handleCloseModal = () => {
+    setVehicleStatus(null);
+    setSelectedRouteId(null);
+  };
 
   return (
     <div className="container mt-4">
@@ -148,7 +156,6 @@ const BusBooking = () => {
               />
             </div>
           </div>
-
           <div className="mt-3 d-flex justify-content-end">
             <button
               className="btn btn-primary"
@@ -162,51 +169,80 @@ const BusBooking = () => {
       </div>
 
       <div className="card mt-4">
-      <div className="card-body">
-        <h2>Available Routes</h2>
-        {loading && <p>Loading routes...</p>}
-        {availableRoutes.length === 0 && !loading && (
-          <p>No routes available.</p>
-        )}
-      {availableRoutes.length > 0 && (
-      <table className="table table-striped table-bordered">
-        <thead className="table-dark">
-          <tr>
-            <th>Source</th>
-            <th>Destination</th>
-            <th>Date</th>
-            <th>Vehicle Type</th>
-            <th>Distance (km)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {availableRoutes.map((route) => (
-            <tr key={route.routeId}>
-              <td>{route.source}</td>
-              <td>{route.destination}</td>
-              <td>{route.date}</td>
-              <td>{route.vehicleType}</td>
-              <td>{route.distance}</td>
-              <td>
-                <button
-                  onClick={() => handleBook(route.routeId)}
-                  className="btn btn-success btn-sm"
-                >
-                  Book
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )}
-  </div>
+        <div className="card-body">
+          <h2>Available Routes</h2>
+          {loading && <p>Loading routes...</p>}
+          {availableRoutes.length === 0 && !loading && <p>No routes available.</p>}
+          {availableRoutes.length > 0 && (
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Source</th>
+                  <th>Destination</th>
+                  <th>Date</th>
+                  <th>Vehicle Type</th>
+                  <th>Distance (km)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {availableRoutes.map((route) => (
+                  <tr key={route.id}>
+                    <td>{route.id}</td>
+                    <td>{route.source}</td>
+                    <td>{route.destination}</td>
+                    <td>{route.date}</td>
+                    <td>{route.vehicleType}</td>
+                    <td>{route.distance}</td>
+                    <td>
+                      <button
+                        onClick={() => handleBook(route.id)}
+                        className="btn btn-success btn-sm"
+                      >
+                        Book
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
+      {/* Modal for vehicle availability */}
+      {vehicleStatus && (
+        <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Vehicle Availability</h5>
+                <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+              </div>
+              <div className="modal-body">
+                {vehicleStatus === "available" ? (
+                  <p>The vehicle is available. Do you want to proceed with booking?</p>
+                ) : (
+                  <p>Sorry, the vehicle is not available right now. Please try another route.</p>
+                )}
+              </div>
+              <div className="modal-footer">
+                {vehicleStatus === "available" && (
+                  <button className="btn btn-primary" onClick={handleProceed}>
+                    Proceed
+                  </button>
+                )}
+                <button className="btn btn-secondary" onClick={handleCloseModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default BusBooking;
-

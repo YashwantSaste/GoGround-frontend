@@ -118,6 +118,9 @@ const passengersArray = storedPassengers ? JSON.parse(storedPassengers) : [];
               Download Receipt
             </button>
             </a>
+            <button onClick={()=>navigate("/Ground/route")} className="btn btn-danger">
+              Check Directions
+            </button>
             <button onClick={handleCancel} className="btn btn-danger">
               Cancel
             </button>
