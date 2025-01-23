@@ -43,17 +43,13 @@ import SummaryGround from "../pages/GroundTransport/UserUI_G/SummaryGround";
 import { RouteDetail } from "../pages/GroundTransport/Admin_Ground/RouteDetail";
 import UserDashboard from "../pages/GroundTransport/UserUI_G/SummaryGround";
 import PassengerDetails from "../pages/GroundTransport/Admin_Ground/PassengerDetails";
-import PaymentDetails from "../pages/GroundTransport/UserUI_G/PaymentDetails";
+import EditCredentialsPage from "../pages/GroundTransport/UserUI_G/EditCredentialsPage";
+import { UserHistory } from "../pages/GroundTransport/UserUI_G/UserHistory";
 import ConfirmBooking from "../pages/GroundTransport/UserUI_G/ConfirmBooking";
-import EditCredentialsPage from "../pages/GroundTransport/UserUI_G/EditCredentialsPage.tsx";
-import {UserHistory} from "../pages/GroundTransport/UserUI_G/UserHistory.tsx";
-
-import DirectionsMap from "../pages/GroundTransport/UserUI_G/DirectionsMap.js";
-import MapboxCDNComponent from "../pages/GroundTransport/UserUI_G/MapboxCDNComponent.tsx";
-
+import PaymentDetails from "../pages/GroundTransport/UserUI_G/PaymentDetails";
+import Receipt from "../pages/GroundTransport/UserUI_G/Receipt";
 import { PaymentPage } from "../pages/GroundTransport/Admin_Ground/Payments";
-
-
+import MapboxCDNComponent from "../pages/GroundTransport/UserUI_G/MapboxCDNComponent";
 
 const PrivateRoutes = () => {
   // const ProfilePage = lazy(() => import("../modules/profile/ProfilePage"));
@@ -161,6 +157,9 @@ const PrivateRoutes = () => {
         <Route path="/confirm-booking" element={<ConfirmBooking/>}/>
         {/* Payment details for ground user */}
         <Route path="/payment-details" element={<PaymentDetails/>}/>
+        {/* Receipt showcasing and downloading for ground user */}
+        <Route path="/receipt" element={<Receipt/>}/>
+
 
         {/* <Route path=" Air/Booking" element={<AirBookingPage/>}></Route> */}
 

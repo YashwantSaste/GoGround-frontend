@@ -6,8 +6,6 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
 
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js"; // Import Stripe components
 
-
-
 interface PassengerDetailsFormData {
   name: string;
   age: number;
@@ -39,7 +37,6 @@ const PaymentDetails: React.FC = () => {
   const [fare, setFare] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<string>(""); // Track selected payment method
 
   const stripe = useStripe();
   const elements = useElements();
@@ -77,67 +74,65 @@ const PaymentDetails: React.FC = () => {
       alert("Stripe has not loaded yet. Please try again.");
       return;
     }
-
+  
     if (!fare) {
       alert("Fare is not available.");
       return;
     }
-
-    const fareToBeCalculated = fare * 100;
-
+  
+    const fareToBeCalculated = fare * 100; // Convert fare to smallest currency unit (e.g., cents)
+  
     setLoading(true);
     try {
-      // Step 1: Create PaymentIntent
-      const { data } = await axios.post(`${API_URL}/stripe/payment/create-intent`,{
-        "amount": 5000.0,
-        "currency": "usd",
-        "booking_id": 123456,
-        "payment_method": "card"
+      // Step 1: Create PaymentIntent with dynamic values
+      const { data } = await axios.post(`${API_URL}/stripe/payment/create-intent`, {
+        amount: fareToBeCalculated, // Dynamically calculated fare
+        currency: "usd", // Set to desired currency
+        booking_id: bookingId, // Dynamically passed booking ID
+        payment_method: "card", // Payment method (can be extended for other methods)
       });
-
-
+  
       const { clientSecret } = data;
-
+  
       // Step 2: Confirm the PaymentIntent with Stripe
       const cardElement = elements.getElement(CardElement);
       if (!cardElement) {
         alert("Card Element not found. Please try again.");
         return;
       }
-
+  
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
         },
-
       });
-
+  
       if (error) {
         setError(`Payment failed: ${error.message}`);
         alert("Payment failed. Please try again.");
       } else if (paymentIntent) {
         console.log("Payment successful:", paymentIntent);
-
-
+  
         // Step 3: Update payment status on the backend
         const paymentId = paymentIntent.id;
         const confirmPaymentStatus = await axios.put(
           `${API_URL}/stripe/payment/update-status/${paymentId}?status=COMPLETED`
         );
-
+  
         console.log("Payment status updated:", confirmPaymentStatus);
-
-        // Step 4: Send email confirmation for booking
-        try {
-          const sendMail = await axios.post(`${API_URL}/mail/${bookingId}`);
-          console.log("Mail sent successfully:", sendMail);
-        } catch (mailError) {
-          console.error("Error sending mail:", mailError);
-        }
-
-
-        alert("Payment successful! Your booking is confirmed.");
-        navigate("/BookingHistory"); // Redirect to booking history
+  
+        localStorage.setItem("passengerDetails", JSON.stringify(passengers));
+  
+        // Step 4: Redirect to Receipt page instead of booking history
+        navigate("/receipt", {
+          state: {
+            bookingId: bookingId,
+            paymentId: confirmPaymentStatus.data.id,
+            fare: fare,
+            paymentMethod: "card",
+            passengers: passengers,
+          },
+        });
       }
     } catch (err) {
       console.error("Error processing payment:", err);
@@ -146,6 +141,7 @@ const PaymentDetails: React.FC = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="container mt-4">
