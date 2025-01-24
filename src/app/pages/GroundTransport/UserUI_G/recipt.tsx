@@ -8,7 +8,7 @@ const Receipt: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [url,setUrl]=useState<string>("");
-  const [loading,setLoading] = useState<boolean>(false)
+  const [loading,setLoading]=useState<boolean>(false);
 
   const { bookingId, paymentId, fare, paymentMethod } = location.state as {
     bookingId: number;
@@ -77,7 +77,9 @@ const passengersArray = storedPassengers ? JSON.parse(storedPassengers) : [];
     } catch (error) {
       console.error("Error in fetching or generating receipt:", error);
     }
+
     setLoading(false)
+
   };
 
   const handleCancel = () => {
@@ -117,11 +119,16 @@ const passengersArray = storedPassengers ? JSON.parse(storedPassengers) : [];
           <div className="d-flex justify-content-between">
             <a href={url}>
             <button 
-            disabled={loading}
+             disabled={loading} 
             className="btn btn-success">
               Download Receipt
             </button>
             </a>
+            <button
+           
+            onClick={()=>navigate("/Ground/route")} className="btn btn-danger">
+              Check Directions
+            </button>
             <button onClick={handleCancel} className="btn btn-danger">
               Cancel
             </button>
